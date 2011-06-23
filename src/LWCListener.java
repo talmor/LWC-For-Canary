@@ -25,6 +25,7 @@ public class LWCListener extends PluginListener {
         if (!isProtectable(paramBlock)) {
             return false;
         }
+        int worldID = paramPlayer.getWorld().getType().getId();
 
         List<ComplexBlock> localList = this.lwc.getEntitySet(paramPlayer.getWorld(), paramBlock.getX(),
                 paramBlock.getY(), paramBlock.getZ());
@@ -36,19 +37,18 @@ public class LWCListener extends PluginListener {
             if (localComplexBlock == null) {
                 continue;
             }
-            int worldID = paramPlayer.getWorld().getType().getId();
-            localEntity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock.getX(),
+            Entity entity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock.getX(),
                     localComplexBlock.getY(), localComplexBlock.getZ());
 
-            if (localEntity == null) {
+            if (entity == null) {
                 continue;
             }
+            localEntity = entity;
             bool1 = this.lwc.canAccessChest(paramPlayer, localEntity);
             bool2 = this.lwc.canAdminChest(paramPlayer, localEntity);
         }
 
         if ((bool1) && (localEntity != null) && (bool2)) {
-            int worldID = paramPlayer.getWorld().getType().getId();
             this.physicalDatabase.unregisterProtectedEntity(worldID, localEntity.getX(), localEntity.getY(),
                     localEntity.getZ());
             this.physicalDatabase.unregisterProtectionRights(localEntity.getID());
@@ -62,6 +62,7 @@ public class LWCListener extends PluginListener {
         // work around to crow problem
         // paramBlock = paramPlayer.getWorld().getBlockAt(paramBlock.getX(),
         // paramBlock.getY(), paramBlock.getZ());
+        int worldID = paramPlayer.getWorld().getType().getId();
 
         if (!isProtectable(paramBlock)) {
             return false;
@@ -69,38 +70,39 @@ public class LWCListener extends PluginListener {
 
         List<ComplexBlock> localList = this.lwc.getEntitySet(paramPlayer.getWorld(), paramBlock.getX(),
                 paramBlock.getY(), paramBlock.getZ());
-
+        
+      
         boolean bool1 = true;
         Entity localEntity = null;
         int i = 1;
-
+                
         for (Iterator<ComplexBlock> iBlocks = localList.iterator(); iBlocks.hasNext();) {
             ComplexBlock localComplexBlock = iBlocks.next();
             if (localComplexBlock == null) {
                 continue;
             }
-            int worldID = paramPlayer.getWorld().getType().getId();
-            localEntity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock.getX(),
+            Entity entity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock.getX(),
                     localComplexBlock.getY(), localComplexBlock.getZ());
-
-            if (localEntity == null) {
+            if (entity == null) {
                 continue;
             }
+            localEntity = entity;
             bool1 = this.lwc.canAccessChest(paramPlayer, localEntity);
             i = 0;
         }
-
+        
+        
         if (paramBlock.getStatus() != 0) {
             return !bool1;
         }
 
         List<String> localObject1 = this.memoryDatabase.getActions(paramPlayer.getName());
 
-        boolean bool2 = localObject1.contains("free");
-        boolean bool3 = localObject1.contains("info");
-        boolean bool4 = localObject1.contains("create");
-        boolean bool5 = localObject1.contains("modify");
-        boolean bool6 = localObject1.contains("dropTransferSelect");
+        boolean op_free = localObject1.contains("free");
+        boolean op_info = localObject1.contains("info");
+        boolean op_create = localObject1.contains("create");
+        boolean op_modify = localObject1.contains("modify");
+        boolean op_drop = localObject1.contains("dropTransferSelect");
         Object localObject2;
         Object localObject3;
         Action localAction;
@@ -110,7 +112,7 @@ public class LWCListener extends PluginListener {
         if (localEntity != null) {
             i = 0;
 
-            if (bool3) {
+            if (op_info) {
                 String str1 = "";
 
                 if (localEntity.getType() == 1) {
@@ -176,7 +178,7 @@ public class LWCListener extends PluginListener {
                 }
                 return false;
             }
-            if (bool6) {
+            if (op_drop) {
                 boolean bool7 = this.lwc.canAccessChest(paramPlayer, localEntity);
                 if (!bool7) {
                     paramPlayer
@@ -201,10 +203,9 @@ public class LWCListener extends PluginListener {
 
                 return false;
             }
-            if (bool2) {
+            if (op_free) {
                 if ((this.lwc.isAdmin(paramPlayer)) || (localEntity.getOwner().equals(paramPlayer.getName()))) {
                     paramPlayer.sendMessage("§aRemoved lock on the chest succesfully!");
-                    int worldID = paramPlayer.getWorld().getType().getId();
                     this.physicalDatabase.unregisterProtectedEntity(worldID, localEntity.getX(), localEntity.getY(),
                             localEntity.getZ());
                     this.physicalDatabase.unregisterProtectionRights(localEntity.getID());
@@ -219,7 +220,7 @@ public class LWCListener extends PluginListener {
                 }
                 return true;
             }
-            if (bool5) {
+            if (op_modify) {
                 if (this.lwc.canAdminChest(paramPlayer, localEntity)) {
                     localAction = this.memoryDatabase.getAction("modify", paramPlayer.getName());
 
@@ -255,7 +256,6 @@ public class LWCListener extends PluginListener {
                             localObject5 = ((String) localObject5).substring(2);
                         }
 
-                        int worldID = paramPlayer.getWorld().getType().getId();
                         int i2 = this.physicalDatabase.loadProtectedEntity(worldID, paramBlock.getX(), paramBlock.getY(),
                                 paramBlock.getZ()).getID();
 
@@ -286,7 +286,7 @@ public class LWCListener extends PluginListener {
 
         }
 
-        if (bool6) {
+        if (op_drop) {
             paramPlayer.sendMessage("§4Cannot select unregistered chest as drop transfer target.");
             paramPlayer.sendMessage("§4Use \"/lwc droptransfer select\" to try again.");
             this.memoryDatabase.unregisterAllActions(paramPlayer.getName());
@@ -294,7 +294,7 @@ public class LWCListener extends PluginListener {
             return false;
         }
 
-        if ((bool3) || (bool2)) {
+        if ((op_info) || (op_free)) {
             paramPlayer.sendMessage("§4Chest is unregistered");
             if (this.lwc.notInPersistentMode(paramPlayer.getName())) {
                 this.memoryDatabase.unregisterAllActions(paramPlayer.getName());
@@ -302,7 +302,7 @@ public class LWCListener extends PluginListener {
             return false;
         }
 
-        if (((bool4) || (bool5)) && (i == 0)) {
+        if (((op_create) || (op_modify)) && (i == 0)) {
             if (!this.lwc.canAdminChest(paramPlayer, localEntity))
                 paramPlayer.sendMessage("§4You do not own that chest!");
             else {
@@ -314,7 +314,7 @@ public class LWCListener extends PluginListener {
             return true;
         }
 
-        if ((i != 0) && (bool4)) {
+        if ((i != 0) && (op_create)) {
             localAction = this.memoryDatabase.getAction("create", paramPlayer.getName());
 
             localObject2 = localAction.getData();
@@ -342,7 +342,6 @@ public class LWCListener extends PluginListener {
             }
 
             if (cmd.equals("public")) {
-                int worldID = paramPlayer.getWorld().getType().getId();
                 this.physicalDatabase.registerProtectedEntity(worldID, 0, paramPlayer.getName(), "", paramBlock.getX(),
                         paramBlock.getY(), paramBlock.getZ());
                 paramPlayer.sendMessage("§2Created public protection successfully");
@@ -353,7 +352,6 @@ public class LWCListener extends PluginListener {
                     str4 = localAction.getData().substring("password ".length());
                     str4 = this.lwc.encrypt(str4);
 
-                    int worldID = paramPlayer.getWorld().getType().getId();
                     this.physicalDatabase.registerProtectedEntity(worldID, 1, paramPlayer.getName(), str4,
                             paramBlock.getX(), paramBlock.getY(), paramBlock.getZ());
                     this.memoryDatabase.registerPlayer(paramPlayer.getName(), this.physicalDatabase
@@ -378,7 +376,6 @@ public class LWCListener extends PluginListener {
                         split2 = str4.split(" ");
                     }
 
-                    int worldID = paramPlayer.getWorld().getType().getId();
                     this.physicalDatabase.registerProtectedEntity(worldID, 2, paramPlayer.getName(), "",
                             paramBlock.getX(), paramBlock.getY(), paramBlock.getZ());
 

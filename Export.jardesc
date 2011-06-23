@@ -11,7 +11,6 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <file path="/LWC/Exportar.jardesc"/>
         <javaElement handleIdentifier="=LWC/src"/>
         <file path="/LWC/.classpath"/>
         <file path="/LWC/.project"/>
