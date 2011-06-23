@@ -9,14 +9,10 @@ public class Entity {
     private int y;
     private int z;
     private String date;
-    private String world;
+    private int worldID;
 
-    public String getWorld() {
-        return world;
-    }
-
-    public void setWorld(String world) {
-        this.world = world;
+    public int getWorldID() {
+        return worldID;
     }
 
     public String getDate() {
@@ -81,5 +77,14 @@ public class Entity {
 
     public void setZ(int paramInt) {
         this.z = paramInt;
+    }
+
+    public void setWorldID(int worldID) {
+        this.worldID = worldID;
+        
+    }
+
+    public String getWorldName() {        
+        return (this.worldID == -1) ?  "NETHER":"NORMAL";
     }
 }

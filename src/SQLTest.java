@@ -38,7 +38,7 @@ public class SQLTest
     this.phys.connection.setAutoCommit(false);
     while (paramInt > 0)
     {
-      this.phys.registerProtectedEntity("NORMAL",localRandom.nextInt(1), "Hidendra", "", localRandom.nextInt(255), localRandom.nextInt(255), localRandom.nextInt(255));
+      this.phys.registerProtectedEntity(0,localRandom.nextInt(1), "Hidendra", "", localRandom.nextInt(255), localRandom.nextInt(255), localRandom.nextInt(255));
       paramInt--;
     }
     this.logger.info("Commiting");

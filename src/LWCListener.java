@@ -36,8 +36,8 @@ public class LWCListener extends PluginListener {
             if (localComplexBlock == null) {
                 continue;
             }
-            String world = paramPlayer.getWorld().getType().name();
-            localEntity = this.physicalDatabase.loadProtectedEntity(world, localComplexBlock.getX(),
+            int worldID = paramPlayer.getWorld().getType().getId();
+            localEntity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock.getX(),
                     localComplexBlock.getY(), localComplexBlock.getZ());
 
             if (localEntity == null) {
@@ -48,8 +48,8 @@ public class LWCListener extends PluginListener {
         }
 
         if ((bool1) && (localEntity != null) && (bool2)) {
-            String world = paramPlayer.getWorld().getType().name();
-            this.physicalDatabase.unregisterProtectedEntity(world, localEntity.getX(), localEntity.getY(),
+            int worldID = paramPlayer.getWorld().getType().getId();
+            this.physicalDatabase.unregisterProtectedEntity(worldID, localEntity.getX(), localEntity.getY(),
                     localEntity.getZ());
             this.physicalDatabase.unregisterProtectionRights(localEntity.getID());
             paramPlayer.sendMessage("§4Chest unregistered.");
@@ -79,8 +79,8 @@ public class LWCListener extends PluginListener {
             if (localComplexBlock == null) {
                 continue;
             }
-            String world = paramPlayer.getWorld().getType().name();
-            localEntity = this.physicalDatabase.loadProtectedEntity(world, localComplexBlock.getX(),
+            int worldID = paramPlayer.getWorld().getType().getId();
+            localEntity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock.getX(),
                     localComplexBlock.getY(), localComplexBlock.getZ());
 
             if (localEntity == null) {
@@ -162,7 +162,7 @@ public class LWCListener extends PluginListener {
                 }
 
                 if (bool8) {
-                    String world = com.griefcraft.util.StringUtils.capitalizeFirstLetter(localEntity.getWorld());
+                    String world = com.griefcraft.util.StringUtils.capitalizeFirstLetter(localEntity.getWorldName());
                     paramPlayer.sendMessage(new StringBuilder().append("§2World: §6").append(world).toString());
                     paramPlayer.sendMessage(new StringBuilder().append("§2Location: §6{").append(localEntity.getX())
                             .append(", ").append(localEntity.getY()).append(", ").append(localEntity.getZ())
@@ -204,8 +204,8 @@ public class LWCListener extends PluginListener {
             if (bool2) {
                 if ((this.lwc.isAdmin(paramPlayer)) || (localEntity.getOwner().equals(paramPlayer.getName()))) {
                     paramPlayer.sendMessage("§aRemoved lock on the chest succesfully!");
-                    String world = paramPlayer.getWorld().getType().name();
-                    this.physicalDatabase.unregisterProtectedEntity(world, localEntity.getX(), localEntity.getY(),
+                    int worldID = paramPlayer.getWorld().getType().getId();
+                    this.physicalDatabase.unregisterProtectedEntity(worldID, localEntity.getX(), localEntity.getY(),
                             localEntity.getZ());
                     this.physicalDatabase.unregisterProtectionRights(localEntity.getID());
                     if (this.lwc.notInPersistentMode(paramPlayer.getName())) {
@@ -255,8 +255,8 @@ public class LWCListener extends PluginListener {
                             localObject5 = ((String) localObject5).substring(2);
                         }
 
-                        String world = paramPlayer.getWorld().getType().name();
-                        int i2 = this.physicalDatabase.loadProtectedEntity(world, paramBlock.getX(), paramBlock.getY(),
+                        int worldID = paramPlayer.getWorld().getType().getId();
+                        int i2 = this.physicalDatabase.loadProtectedEntity(worldID, paramBlock.getX(), paramBlock.getY(),
                                 paramBlock.getZ()).getID();
 
                         if (m == 0) {
@@ -342,8 +342,8 @@ public class LWCListener extends PluginListener {
             }
 
             if (cmd.equals("public")) {
-                String world = paramPlayer.getWorld().getType().name();
-                this.physicalDatabase.registerProtectedEntity(world, 0, paramPlayer.getName(), "", paramBlock.getX(),
+                int worldID = paramPlayer.getWorld().getType().getId();
+                this.physicalDatabase.registerProtectedEntity(worldID, 0, paramPlayer.getName(), "", paramBlock.getX(),
                         paramBlock.getY(), paramBlock.getZ());
                 paramPlayer.sendMessage("§2Created public protection successfully");
             } else {
@@ -353,11 +353,11 @@ public class LWCListener extends PluginListener {
                     str4 = localAction.getData().substring("password ".length());
                     str4 = this.lwc.encrypt(str4);
 
-                    String world = paramPlayer.getWorld().getType().name();
-                    this.physicalDatabase.registerProtectedEntity(world, 1, paramPlayer.getName(), str4,
+                    int worldID = paramPlayer.getWorld().getType().getId();
+                    this.physicalDatabase.registerProtectedEntity(worldID, 1, paramPlayer.getName(), str4,
                             paramBlock.getX(), paramBlock.getY(), paramBlock.getZ());
                     this.memoryDatabase.registerPlayer(paramPlayer.getName(), this.physicalDatabase
-                            .loadProtectedEntity(world, paramBlock.getX(), paramBlock.getY(), paramBlock.getZ())
+                            .loadProtectedEntity(worldID, paramBlock.getX(), paramBlock.getY(), paramBlock.getZ())
                             .getID());
                     paramPlayer.sendMessage("§2Created password protection successfully");
                     paramPlayer.sendMessage("§aFor convenience, you don't have to enter your password until");
@@ -378,8 +378,8 @@ public class LWCListener extends PluginListener {
                         split2 = str4.split(" ");
                     }
 
-                    String world = paramPlayer.getWorld().getType().name();
-                    this.physicalDatabase.registerProtectedEntity(world, 2, paramPlayer.getName(), "",
+                    int worldID = paramPlayer.getWorld().getType().getId();
+                    this.physicalDatabase.registerProtectedEntity(worldID, 2, paramPlayer.getName(), "",
                             paramBlock.getX(), paramBlock.getY(), paramBlock.getZ());
 
                     paramPlayer.sendMessage("§2Created private protection successfully");
@@ -399,7 +399,7 @@ public class LWCListener extends PluginListener {
                         }
 
                         this.physicalDatabase.registerProtectionRights(
-                                this.physicalDatabase.loadProtectedEntity(world, paramBlock.getX(), paramBlock.getY(),
+                                this.physicalDatabase.loadProtectedEntity(worldID, paramBlock.getX(), paramBlock.getY(),
                                         paramBlock.getZ()).getID(), str5, i3 != 0 ? 1 : 0, i4);
                         paramPlayer.sendMessage(new StringBuilder().append("§aRegistered rights for §6").append(str5)
                                 .append(": ").append(i3 != 0 ? "[§4ADMIN§6]" : "").append(" [")
@@ -482,8 +482,8 @@ public class LWCListener extends PluginListener {
     }
 
     public boolean onExplode(Block paramBlock) {
-        String world = paramBlock.getWorld().getType().name();
-        int i = this.physicalDatabase.loadProtectedEntities(world, paramBlock.getX(), paramBlock.getY(),
+        int worldID = paramBlock.getWorld().getType().getId();
+        int i = this.physicalDatabase.loadProtectedEntities(worldID, paramBlock.getX(), paramBlock.getY(),
                 paramBlock.getZ(), 4).size() > 0 ? 1 : 0;
         return i != 0;
     }
@@ -589,8 +589,8 @@ public class LWCListener extends PluginListener {
             if (localComplexBlock2 == null) {
                 continue;
             }
-            String world = paramPlayer.getWorld().getType().name();
-            Entity localEntity = this.physicalDatabase.loadProtectedEntity(world, localComplexBlock2.getX(),
+            int worldID = paramPlayer.getWorld().getType().getId();
+            Entity localEntity = this.physicalDatabase.loadProtectedEntity(worldID, localComplexBlock2.getX(),
                     localComplexBlock2.getY(), localComplexBlock2.getZ());
 
             if (localEntity == null) {

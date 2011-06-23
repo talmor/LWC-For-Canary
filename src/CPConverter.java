@@ -68,11 +68,11 @@ public class CPConverter implements Runnable {
                 str2 = split[5].trim();
             log(String.format("Registering chest to %s at location {%d,%d,%d}", new Object[] { str1,
                     Integer.valueOf(k), Integer.valueOf(m), Integer.valueOf(n) }));
-            this.physicalDatabase.registerProtectedEntity("NORMAL", i1, str1, "", k, m, n);
+            this.physicalDatabase.registerProtectedEntity(0, i1, str1, "", k, m, n);
             this.converted += 1;
             if (i2 == -1)
                 continue;
-            int i3 = this.physicalDatabase.loadProtectedEntity("NORMAL", k, m, n).getID();
+            int i3 = this.physicalDatabase.loadProtectedEntity(0, k, m, n).getID();
             String[] arrayOfString1 = str2.split(";");
             for (String str3 : arrayOfString1) {
                 this.physicalDatabase.registerProtectionRights(i3, str3, 0, i2);

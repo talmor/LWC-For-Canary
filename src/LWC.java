@@ -62,8 +62,8 @@ public class LWC extends Plugin {
     }
 
     public boolean canAccessChest(Player player, int x, int y, int z) {
-        String world = player.getWorld().getType().name();
-        return canAccessChest(player, this.physicalDatabase.loadProtectedEntity(world, x, y, z));
+        int worldID = player.getWorld().getType().getId();
+        return canAccessChest(player, this.physicalDatabase.loadProtectedEntity(worldID, x, y, z));
     }
 
     public boolean canAdminChest(Player player, Entity chest) {

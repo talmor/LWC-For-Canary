@@ -19,13 +19,13 @@ public class PhysDB extends Database {
     private PreparedStatement _select_chestCount_user;
     private PreparedStatement _select_limit_type_entity;
     private PreparedStatement _select_privateAccess_type_ID_entities;
-    private PreparedStatement _select_protectedEntity_x_y_z_radius;
-    private PreparedStatement _select_protectedEntity_x_y_z;
-    private PreparedStatement _insert_protectedEntity_type_player_password_x_y_z;
+    private PreparedStatement _select_protectedEntity_x_y_z_world_radius;
+    private PreparedStatement _select_protectedEntity_x_y_z_world;
+    private PreparedStatement _insert_protectedEntity_type_player_password_x_y_z_world;
     private PreparedStatement _insert_protectedLimit_type_amount_entity;
     private PreparedStatement _insert_rights_ID_entity_rights_type;
     private PreparedStatement _delete_protectedEntity_ID;
-    private PreparedStatement _delete_protectedEntity_x_y_z;
+    private PreparedStatement _delete_protectedEntity_x_y_z_world;
     private PreparedStatement _delete_limit_type_entity;
     private PreparedStatement _delete_rights_ID;
     private PreparedStatement _delete_rights_ID_entity;
@@ -204,7 +204,7 @@ public class PhysDB extends Database {
             this.connection.setAutoCommit(false);
             log("Creating physical tables if needed");
             localStatement
-                    .executeUpdate("CREATE TABLE IF NOT EXISTS 'protections' (id INTEGER PRIMARY KEY,type INTEGER,owner TEXT,password TEXT,x INTEGER,y INTEGER,z INTEGER,date TEXT,world TEXT);");
+                    .executeUpdate("CREATE TABLE IF NOT EXISTS 'protections' (id INTEGER PRIMARY KEY,type INTEGER,owner TEXT,password TEXT,x INTEGER,y INTEGER,z INTEGER,date TEXT,worldid INTEGER);");
             localStatement
                     .executeUpdate("CREATE TABLE IF NOT EXISTS 'limits' (id INTEGER PRIMARY KEY,type INTEGER,amount INTEGER,entity TEXT);");
             localStatement
@@ -223,17 +223,17 @@ public class PhysDB extends Database {
         this.loaded = true;
     }
 
-    public List<Entity> loadProtectedEntities(String world, int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
+    public List<Entity> loadProtectedEntities(int worldID, int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
         ArrayList localArrayList = new ArrayList();
         try {
-            this._select_protectedEntity_x_y_z_radius.setInt(1, paramInt1 - paramInt4);
-            this._select_protectedEntity_x_y_z_radius.setInt(2, paramInt1 + paramInt4);
-            this._select_protectedEntity_x_y_z_radius.setInt(3, paramInt2 - paramInt4);
-            this._select_protectedEntity_x_y_z_radius.setInt(4, paramInt2 + paramInt4);
-            this._select_protectedEntity_x_y_z_radius.setInt(5, paramInt3 - paramInt4);
-            this._select_protectedEntity_x_y_z_radius.setInt(6, paramInt3 + paramInt4);
-            this._select_protectedEntity_x_y_z_radius.setString(7, world);
-            ResultSet localResultSet = this._select_protectedEntity_x_y_z_radius.executeQuery();
+            this._select_protectedEntity_x_y_z_world_radius.setInt(1, paramInt1 - paramInt4);
+            this._select_protectedEntity_x_y_z_world_radius.setInt(2, paramInt1 + paramInt4);
+            this._select_protectedEntity_x_y_z_world_radius.setInt(3, paramInt2 - paramInt4);
+            this._select_protectedEntity_x_y_z_world_radius.setInt(4, paramInt2 + paramInt4);
+            this._select_protectedEntity_x_y_z_world_radius.setInt(5, paramInt3 - paramInt4);
+            this._select_protectedEntity_x_y_z_world_radius.setInt(6, paramInt3 + paramInt4);
+            this._select_protectedEntity_x_y_z_world_radius.setInt(7, worldID);
+            ResultSet localResultSet = this._select_protectedEntity_x_y_z_world_radius.executeQuery();
             while (localResultSet.next()) {
                 int i = localResultSet.getInt("id");
                 int j = localResultSet.getInt("type");
@@ -252,6 +252,7 @@ public class PhysDB extends Database {
                 localEntity.setY(m);
                 localEntity.setZ(n);
                 localEntity.setDate(str3);
+                localEntity.setWorldID(worldID);
                 localArrayList.add(localEntity);
             }
             localResultSet.close();
@@ -274,7 +275,7 @@ public class PhysDB extends Database {
                 int k = localResultSet.getInt("x");
                 int m = localResultSet.getInt("y");
                 int n = localResultSet.getInt("z");
-                String world = localResultSet.getString("world");
+                int worldID = localResultSet.getInt("worldID");
                 String str3 = localResultSet.getString("date");
                 Entity localEntity = new Entity();
                 localEntity.setID(i);
@@ -284,7 +285,7 @@ public class PhysDB extends Database {
                 localEntity.setX(k);
                 localEntity.setY(m);
                 localEntity.setZ(n);
-                localEntity.setWorld(world);
+                localEntity.setWorldID(worldID);
                 localEntity.setDate(str3);
                 localResultSet.close();
                 Performance.addPhysDBQuery();
@@ -298,13 +299,13 @@ public class PhysDB extends Database {
         return null;
     }
 
-    public Entity loadProtectedEntity(String world, int paramInt1, int paramInt2, int paramInt3) {
+    public Entity loadProtectedEntity(int worldID, int paramInt1, int paramInt2, int paramInt3) {
         try {
-            this._select_protectedEntity_x_y_z.setInt(1, paramInt1);
-            this._select_protectedEntity_x_y_z.setInt(2, paramInt2);
-            this._select_protectedEntity_x_y_z.setInt(3, paramInt3);
-            this._select_protectedEntity_x_y_z.setString(4, world);
-            ResultSet localResultSet = this._select_protectedEntity_x_y_z.executeQuery();
+            this._select_protectedEntity_x_y_z_world.setInt(1, paramInt1);
+            this._select_protectedEntity_x_y_z_world.setInt(2, paramInt2);
+            this._select_protectedEntity_x_y_z_world.setInt(3, paramInt3);
+            this._select_protectedEntity_x_y_z_world.setInt(4, worldID);
+            ResultSet localResultSet = this._select_protectedEntity_x_y_z_world.executeQuery();
             if (localResultSet.next()) {
                 int i = localResultSet.getInt("id");
                 int j = localResultSet.getInt("type");
@@ -319,7 +320,7 @@ public class PhysDB extends Database {
                 localEntity.setX(paramInt1);
                 localEntity.setY(paramInt2);
                 localEntity.setZ(paramInt3);
-                localEntity.setWorld(world);
+                localEntity.setWorldID(worldID);
                 localEntity.setDate(str3);
                 localResultSet.close();
                 Performance.addPhysDBQuery();
@@ -333,19 +334,19 @@ public class PhysDB extends Database {
         return null;
     }
 
-    public void registerProtectedEntity(String world, int paramInt1, String paramString1, String paramString2,
+    public void registerProtectedEntity(int worldID, int paramInt1, String paramString1, String paramString2,
             int paramInt2, int paramInt3, int paramInt4) {
         try {
-            this._insert_protectedEntity_type_player_password_x_y_z.setInt(1, paramInt1);
-            this._insert_protectedEntity_type_player_password_x_y_z.setString(2, paramString1);
-            this._insert_protectedEntity_type_player_password_x_y_z.setString(3, paramString2);
-            this._insert_protectedEntity_type_player_password_x_y_z.setInt(4, paramInt2);
-            this._insert_protectedEntity_type_player_password_x_y_z.setInt(5, paramInt3);
-            this._insert_protectedEntity_type_player_password_x_y_z.setInt(6, paramInt4);
-            this._insert_protectedEntity_type_player_password_x_y_z.setString(7,
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setInt(1, paramInt1);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setString(2, paramString1);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setString(3, paramString2);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setInt(4, paramInt2);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setInt(5, paramInt3);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setInt(6, paramInt4);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setString(7,
                     new Timestamp(new Date().getTime()).toString());
-            this._insert_protectedEntity_type_player_password_x_y_z.setString(8, world);
-            this._insert_protectedEntity_type_player_password_x_y_z.executeUpdate();
+            this._insert_protectedEntity_type_player_password_x_y_z_world.setInt(8, worldID);
+            this._insert_protectedEntity_type_player_password_x_y_z_world.executeUpdate();
             Performance.addPhysDBQuery();
         } catch (Exception localException) {
             localException.printStackTrace();
@@ -389,13 +390,13 @@ public class PhysDB extends Database {
         unregisterProtectionRights(paramInt);
     }
 
-    public void unregisterProtectedEntity(String world, int paramInt1, int paramInt2, int paramInt3) {
+    public void unregisterProtectedEntity(int worldID, int paramInt1, int paramInt2, int paramInt3) {
         try {
-            this._delete_protectedEntity_x_y_z.setInt(1, paramInt1);
-            this._delete_protectedEntity_x_y_z.setInt(2, paramInt2);
-            this._delete_protectedEntity_x_y_z.setInt(3, paramInt3);
-            this._delete_protectedEntity_x_y_z.setString(4, world);
-            this._delete_protectedEntity_x_y_z.executeUpdate();
+            this._delete_protectedEntity_x_y_z_world.setInt(1, paramInt1);
+            this._delete_protectedEntity_x_y_z_world.setInt(2, paramInt2);
+            this._delete_protectedEntity_x_y_z_world.setInt(3, paramInt3);
+            this._delete_protectedEntity_x_y_z_world.setInt(4, worldID);
+            this._delete_protectedEntity_x_y_z_world.executeUpdate();
             Performance.addPhysDBQuery();
         } catch (Exception localException) {
             localException.printStackTrace();
@@ -488,9 +489,17 @@ public class PhysDB extends Database {
     }
 
     private void doUpdate150() {
+        boolean hasWorldStr = true;
         try {
             Statement localStatement1 = this.connection.createStatement();
             localStatement1.executeQuery("SELECT `world` FROM `protections`");
+            localStatement1.close();        
+        } catch (Exception ex) {
+            hasWorldStr = false;
+        }        
+        try {
+            Statement localStatement1 = this.connection.createStatement();
+            localStatement1.executeQuery("SELECT `worldID` FROM `protections`");
             localStatement1.close();
             Performance.addPhysDBQuery();
         } catch (Exception localException1) {
@@ -499,8 +508,15 @@ public class PhysDB extends Database {
             log("ALTERING TABLE `protections` AND FILLING WITH DEFAULT DATA");
             try {
                 Statement localStatement2 = this.connection.createStatement();
-                localStatement2.addBatch("ALTER TABLE `protections` ADD `world` TEXT");
-                localStatement2.addBatch("UPDATE `protections` SET `world`='NORMAL'");
+                localStatement2.addBatch("ALTER TABLE `protections` ADD `worldID` INTEGER");
+                if (hasWorldStr) {
+                    localStatement2.addBatch("UPDATE `protections` SET `worldID`=0 where world='NORMAL'");
+                    localStatement2.addBatch("UPDATE `protections` SET `worldID`=-1 where world='NETHER'");                                        
+                } else {
+                    localStatement2.addBatch("UPDATE `protections` SET `worldID`=0");                    
+                }
+                localStatement2.addBatch("CREATE INDEX protectionsIX2 ON `protections` (owner, x, y, z,worldID)");
+                localStatement2.addBatch("CREATE INDEX protectionsIX3 ON `protections` (x, y, z,worldID)");
                 localStatement2.executeBatch();
                 localStatement2.close();
                 Performance.addPhysDBQuery();
@@ -524,19 +540,19 @@ public class PhysDB extends Database {
                 .prepareStatement("SELECT `amount` FROM `limits` WHERE `type` = ? AND `entity` = ?");
         this._select_privateAccess_type_ID_entities = this.connection
                 .prepareStatement("SELECT `entity`, `rights` FROM `rights` WHERE `type` = ? AND `chest` = ?");
-        this._select_protectedEntity_x_y_z_radius = this.connection
-                .prepareStatement("SELECT * FROM `protections` WHERE x >= ? AND x <= ? AND y >= ? AND y <= ? AND z >= ? AND z <= ? AND `world` = ?");
-        this._select_protectedEntity_x_y_z = this.connection
-                .prepareStatement("SELECT `id`, `type`, `owner`, `password`, `date` FROM `protections` WHERE `x` = ? AND `y` = ? AND `z` = ? AND `world` = ?");
-        this._insert_protectedEntity_type_player_password_x_y_z = this.connection
-                .prepareStatement("INSERT INTO `protections` (type, owner, password, x, y, z, date,world) VALUES(?, ?, ?, ?, ?, ?, ?,?)");
+        this._select_protectedEntity_x_y_z_world_radius = this.connection
+                .prepareStatement("SELECT * FROM `protections` WHERE x >= ? AND x <= ? AND y >= ? AND y <= ? AND z >= ? AND z <= ? AND `worldID` = ?");
+        this._select_protectedEntity_x_y_z_world = this.connection
+                .prepareStatement("SELECT `id`, `type`, `owner`, `password`, `date` FROM `protections` WHERE `x` = ? AND `y` = ? AND `z` = ? AND `worldID` = ?");
+        this._insert_protectedEntity_type_player_password_x_y_z_world = this.connection
+                .prepareStatement("INSERT INTO `protections` (type, owner, password, x, y, z, date,worldID) VALUES(?, ?, ?, ?, ?, ?, ?,?)");
         this._insert_protectedLimit_type_amount_entity = this.connection
                 .prepareStatement("INSERT INTO `limits` (type, amount, entity) VALUES(?, ?, ?)");
         this._insert_rights_ID_entity_rights_type = this.connection
                 .prepareStatement("INSERT INTO `rights` (chest, entity, rights, type) VALUES (?, ?, ?, ?)");
         this._delete_protectedEntity_ID = this.connection.prepareStatement("DELETE FROM `protections` WHERE `id` = ?");
-        this._delete_protectedEntity_x_y_z = this.connection
-                .prepareStatement("DELETE FROM `protections` WHERE `x` = ? AND `y` = ? AND `z` = ? AND `world` = ?");
+        this._delete_protectedEntity_x_y_z_world = this.connection
+                .prepareStatement("DELETE FROM `protections` WHERE `x` = ? AND `y` = ? AND `z` = ? AND `worldID` = ?");
         this._delete_limit_type_entity = this.connection
                 .prepareStatement("DELETE FROM `limits` WHERE `type` = ? AND `entity` = ?");
         this._delete_rights_ID = this.connection.prepareStatement("DELETE FROM `rights` WHERE `chest` = ?");
