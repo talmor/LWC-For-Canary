@@ -95,8 +95,8 @@ public class LWCListener extends PluginListener {
         if (paramBlock.getStatus() != 0) {
             return !bool1;
         }
-
-        List<String> localObject1 = this.memoryDatabase.getActions(paramPlayer.getName());
+        String name = paramPlayer.getName();
+        List<String> localObject1 = this.memoryDatabase.getActions(name);
 
         boolean op_free = localObject1.contains("free");
         boolean op_info = localObject1.contains("info");
@@ -485,76 +485,82 @@ public class LWCListener extends PluginListener {
         return i != 0;
     }
 
-    public boolean onItemDrop(Player paramPlayer, Item paramItem) {
-        String str = paramPlayer.getName();
-        int i = this.lwc.getPlayerDropTransferTarget(str);
+    public boolean onItemDrop(Player player, Item dropItem) {       
+        String playerName = player.getName();
+        int i = this.lwc.getPlayerDropTransferTarget(playerName);
 
-        if ((i == -1) || (!this.lwc.isPlayerDropTransferring(str))) {
+        if ((i == -1) || (!this.lwc.isPlayerDropTransferring(playerName))) {
             return false;
         }
 
         if (!this.physicalDatabase.doesChestExist(i)) {
-            paramPlayer.sendMessage("§4Your drop transfer target was unregistered and/or destroyed.");
-            paramPlayer.sendMessage("§4Please re-register a target chest. Drop transfer will be deactivated.");
+            player.sendMessage("§4Your drop transfer target was unregistered and/or destroyed.");
+            player.sendMessage("§4Please re-register a target chest. Drop transfer will be deactivated.");
 
-            this.memoryDatabase.unregisterMode(str, "dropTransfer");
+            this.memoryDatabase.unregisterMode(playerName, "dropTransfer");
             return false;
         }
 
         Entity localEntity = this.physicalDatabase.loadProtectedEntity(i);
 
         if (localEntity == null) {
-            paramPlayer.sendMessage("§4An unknown error occured. Drop transfer will be deactivated.");
+            player.sendMessage("§4An unknown error occured. Drop transfer will be deactivated.");
 
-            this.memoryDatabase.unregisterMode(str, "dropTransfer");
+            this.memoryDatabase.unregisterMode(playerName, "dropTransfer");
             return false;
         }
 
-        if (!this.lwc.canAccessChest(paramPlayer, localEntity)) {
-            paramPlayer.sendMessage("§4You have lost access to your target chest.");
-            paramPlayer.sendMessage("§4Please re-register a target chest. Drop transfer will be deactivated.");
+        if (!this.lwc.canAccessChest(player, localEntity)) {
+            player.sendMessage("§4You have lost access to your target chest.");
+            player.sendMessage("§4Please re-register a target chest. Drop transfer will be deactivated.");
 
-            this.memoryDatabase.unregisterMode(str, "dropTransfer");
+            this.memoryDatabase.unregisterMode(playerName, "dropTransfer");
             return false;
         }
-
-        List<ComplexBlock> localList = this.lwc.getEntitySet(paramPlayer.getWorld(), localEntity.getX(),
+        World world = etc.getServer().getWorld(localEntity.getWorldID());
+        List<ComplexBlock> chestList = this.lwc.getEntitySet(world, localEntity.getX(),
                 localEntity.getY(), localEntity.getZ());
-        int j = paramItem.getAmount();
-
-        for (ComplexBlock localComplexBlock : localList) {
-            Inventory localInventory = (Inventory) localComplexBlock;
-
-            for (Item localItem2 : localInventory.getContents())
-                System.out.println(new StringBuilder().append("").append(localItem2.getItemId()).append(":")
-                        .append(localItem2.getAmount()).append(" ").append(localItem2.getSlot()).toString());
-            Item localItem1;
-            while ((((localItem1 = localInventory.getItemFromId(paramItem.getItemId(), 63)) != null) || (localInventory
-                    .getEmptySlot() != -1)) && (j > 0)) {
-                if (localItem1 != null) {
-                    int k = Math.min(64 - localItem1.getAmount(), paramItem.getAmount());
-                    localInventory.setSlot(paramItem.getItemId(), localItem1.getAmount() + k, localItem1.getSlot());
-                    j -= k;
+        int amount = dropItem.getAmount();
+        
+        for (ComplexBlock localComplexBlock : chestList) {
+            Inventory chest = (Inventory) localComplexBlock;
+            Item item;
+            while ((((item = chest.getItemFromId(dropItem.getItemId(), 63)) != null) || (chest
+                    .getEmptySlot() != -1)) && (amount > 0)) {
+                if (item != null) {
+                    int k = Math.min(64 - item.getAmount(), dropItem.getAmount());
+                    chest.setSlot(dropItem.getItemId(), item.getAmount() + k, item.getSlot());
+                    amount -= k;
                     continue;
                 }
-                localInventory.addItem(new Item(paramItem.getItemId(), j));
-                j = 0;
+                if (amount > 0) {
+                    chest.addItem(new Item(dropItem.getItemId(), amount));
+                    amount = 0;
+                }
             }
-
             localComplexBlock.update();
 
-            if (j == 0) {
+            if (amount == 0) {
                 break;
             }
         }
-        if (j > 0) {
-            paramPlayer.sendMessage("§4Your chest is full. Drop transfer will be deactivated.");
-            paramPlayer.sendMessage("§4Any remaining quantity that could not be stored will be returned.");
-            this.memoryDatabase.unregisterMode(str, "dropTransfer");
-            this.memoryDatabase.registerMode(str, "dropTransfer", new StringBuilder().append("f").append(i).toString());
-            paramPlayer.getInventory().addItem(paramItem);
-            paramPlayer.getInventory().update();
+
+        player.sendMessage(String.format("Amount dropped: %d", dropItem.getAmount()));
+        player.sendMessage(String.format("Amount left: %d", amount));
+        if (dropItem.getAmount()-amount > 0 ) {
+            player.getInventory().removeItem(dropItem.getItemId(), dropItem.getAmount()-amount);
         }
+
+
+        if (amount > 0) {
+            player.sendMessage("§4Your chest is full. Drop transfer will be deactivated.");
+            player.sendMessage("§4Any remaining quantity that could not be stored will be returned.");
+            this.memoryDatabase.unregisterMode(playerName, "dropTransfer");
+            this.memoryDatabase.registerMode(playerName, "dropTransfer", new StringBuilder().append("f").append(i).toString());
+            dropItem.setAmount(amount);
+            player.getInventory().addItem(dropItem);
+        }
+        player.getInventory().update();
 
         return true;
     }

@@ -25,7 +25,12 @@
      }
      else if (mode.equals("droptransfer")) {
        mode = "dropTransfer";
- 
+
+       if (mode.equals("dropTransfer")) {
+           player.sendMessage("§4Mode currently disabled.");
+           return;
+       }
+
        if ((!lwc.isAdmin(player)) && (lwc.isModeBlacklisted(mode))) {
          player.sendMessage("§4That mode is currently disabled");
          return;

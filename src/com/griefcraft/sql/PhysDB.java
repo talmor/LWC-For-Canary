@@ -198,7 +198,6 @@ public class PhysDB extends Database {
     public void load() {
         if (this.loaded)
             return;
-        doUpdate140();
         try {
             Statement localStatement = this.connection.createStatement();
             this.connection.setAutoCommit(false);
@@ -217,6 +216,7 @@ public class PhysDB extends Database {
         } catch (Exception localException) {
             localException.printStackTrace();
         }
+        doUpdate140();
         doUpdate100();
         doUpdate130();
         doUpdate150();
@@ -474,6 +474,7 @@ public class PhysDB extends Database {
             localStatement1.close();
             Performance.addPhysDBQuery();
         } catch (Exception localException1) {
+            localException1.printStackTrace();
             log("Outdated database!");
             log("UPGRADING FROM 1.30 TO 1.40");
             log("Renaming table `chests` to `protections`");
