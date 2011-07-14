@@ -19,7 +19,7 @@ public class Updater {
     private Logger              logger        = Logger.getLogger(getClass().getSimpleName());
     // private static final String UPDATE_SITE =
     // "https://github.com/Hidendra/LWC/raw/master/";
-    private static final String UPDATE_SITE   = "https://github.com/talmor/LWC-For-Canary/raw/master/dist/";
+    private static final String UPDATE_SITE   = "https://github.com/talmor/LWC-For-Canary/raw/master/DIST/";
     private static final String VERSION_FILE  = "VERSION";
     private static final String DIST_FILE     = "LWC.jar";
     private List<UpdaterFile>   needsUpdating = new ArrayList();
@@ -35,7 +35,7 @@ public class Updater {
             File file = new File(path);
 
             if ((file != null) && (!file.exists()) && (!file.isDirectory())) {
-                UpdaterFile updaterFile = new UpdaterFile(UPDATE_SITE + path);
+                UpdaterFile updaterFile = new UpdaterFile(UPDATE_SITE + path+"?raw=true");
                 updaterFile.setLocalLocation(path);
 
                 this.needsUpdating.add(updaterFile);
