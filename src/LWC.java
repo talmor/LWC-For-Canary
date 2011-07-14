@@ -313,6 +313,7 @@ public class LWC extends Plugin {
         registerHook(PluginLoader.Hook.OPEN_INVENTORY);
         registerHook(PluginLoader.Hook.EXPLODE);
         registerHook(PluginLoader.Hook.ITEM_DROP);
+        registerHook(PluginLoader.Hook.BLOCK_RIGHTCLICKED);
     }
 
     public boolean isAdmin(Player player) {

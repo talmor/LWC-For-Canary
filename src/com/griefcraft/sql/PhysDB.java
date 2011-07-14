@@ -212,7 +212,6 @@ public class PhysDB extends Database {
             this.connection.setAutoCommit(true);
             localStatement.close();
             Performance.addPhysDBQuery();
-            loadPreparedStatements();
         } catch (Exception localException) {
             localException.printStackTrace();
         }
@@ -220,6 +219,11 @@ public class PhysDB extends Database {
         doUpdate100();
         doUpdate130();
         doUpdate150();
+        try {
+            loadPreparedStatements();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         this.loaded = true;
     }
 

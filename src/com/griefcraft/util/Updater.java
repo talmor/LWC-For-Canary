@@ -17,7 +17,8 @@
 /*     */ public class Updater
 /*     */ {
 /*  42 */   private Logger logger = Logger.getLogger(getClass().getSimpleName());
-/*     */   private static final String UPDATE_SITE = "https://github.com/Hidendra/LWC/raw/master/";
+/*     */   //private static final String UPDATE_SITE = "https://github.com/Hidendra/LWC/raw/master/";
+            private static final String UPDATE_SITE = "https://github.com/Hidendra/LWC/raw/master/";
 /*     */   private static final String VERSION_FILE = "VERSION";
 /*     */   private static final String DIST_FILE = "dist/LWC.jar";
 /*  62 */   private List<UpdaterFile> needsUpdating = new ArrayList();
@@ -34,7 +35,7 @@
 /*  77 */       File file = new File(path);
 /*     */ 
 /*  79 */       if ((file != null) && (!file.exists()) && (!file.isDirectory())) {
-/*  80 */         UpdaterFile updaterFile = new UpdaterFile("https://github.com/Hidendra/LWC/raw/master/" + path);
+/*  80 */         UpdaterFile updaterFile = new UpdaterFile(UPDATE_SITE + path);
 /*  81 */         updaterFile.setLocalLocation(path);
 /*     */ 
 /*  83 */         this.needsUpdating.add(updaterFile);
@@ -54,7 +55,7 @@
 /* 102 */     double latestVersion = getLatestVersion();
 /*     */ 
 /* 104 */     if (latestVersion > 1.44D) {
-/* 105 */       UpdaterFile updaterFile = new UpdaterFile("https://github.com/Hidendra/LWC/raw/master/dist/LWC.jar");
+/* 105 */       UpdaterFile updaterFile = new UpdaterFile(UPDATE_SITE + DIST_FILE);
 /* 106 */       updaterFile.setLocalLocation("plugins/LWC.jar");
 /*     */ 
 /* 108 */       this.needsUpdating.add(updaterFile);
@@ -76,7 +77,7 @@
 /*     */   {
 /*     */     try
 /*     */     {
-/* 130 */       URL url = new URL("https://github.com/Hidendra/LWC/raw/master/VERSION");
+/* 130 */       URL url = new URL(UPDATE_SITE+VERSION_FILE);
 /*     */ 
 /* 132 */       InputStream inputStream = url.openStream();
 /* 133 */       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
