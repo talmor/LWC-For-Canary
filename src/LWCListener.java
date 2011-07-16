@@ -668,9 +668,4 @@ public class LWCListener extends PluginListener {
         return false;
     }
 
-    @Override
-    public boolean onBlockRightClick(Player player, Block blockClicked, Item itemInHand) {
-        System.out.println("RIGHT CLICK:TRUE");
-        return true;
-    }
 }
