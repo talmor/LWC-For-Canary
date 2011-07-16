@@ -44,7 +44,7 @@ public class Updater {
 
         double latestVersion = getLatestVersion();
 
-        if (latestVersion > 1.44D) {
+        if (latestVersion > LWCInfo.VERSIONF) {
             this.logger.info("Update detected for LWC");
             this.logger.info("Latest version: " + latestVersion);
         }

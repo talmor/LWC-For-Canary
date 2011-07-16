@@ -1,8 +1,5 @@
-import com.griefcraft.sql.PhysDB;
 import com.griefcraft.util.Performance;
 import com.griefcraft.util.StringUtils;
-import com.griefcraft.util.Updater;
-import java.util.List;
 
 public class Command_Admin implements LWC_Command {
     public void execute(LWC lwc, Player player, String[] args) {
@@ -71,16 +68,15 @@ public class Command_Admin implements LWC_Command {
             }
 
         } else if (action.equals("clear")) {
-            if (args.length < 2) {
+            if (args.length < 3) {
                 lwc.sendSimpleUsage(player, "/lwc -admin clear chests|limits|rights");
                 return;
             }
 
             String toClear = args[2].toLowerCase();
-
+            
             if (toClear.equals("protections")) {
                 lwc.getPhysicalDatabase().unregisterProtectionEntities();
-
                 player.sendMessage("§2Removed all protected chests and furnaces");
             } else if (toClear.equals("rights")) {
                 lwc.getPhysicalDatabase().unregisterProtectionRights();

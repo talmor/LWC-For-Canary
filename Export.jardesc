@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="D:/dev/Minecraft Mods/Server_CanaryB7/plugins/LWC.jar"/>
+    <jar path="D:/dev/Minecraft Mods/Server Canary B8/plugins/LWC.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/LWC/Export.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
