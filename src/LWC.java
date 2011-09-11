@@ -132,6 +132,10 @@ public class LWC extends Plugin {
             this.updater = new Updater();
 
             this.updater.check();
+<<<<<<< HEAD
+=======
+            
+>>>>>>> Fixed update bug
             this.updater.update();
 
             
