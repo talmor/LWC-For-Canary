@@ -132,15 +132,15 @@ public class LWC extends Plugin {
             this.updater = new Updater();
 
             this.updater.check();
-            /*
             this.updater.update();
 
+            
             if ((ConfigValues.AUTO_UPDATE.getBool()) && (this.updater.checkDist())) {
                 log("Reloading LWC");
                 etc.getLoader().reloadPlugin("LWC");
                 return;
             }
-            */
+            
 
             log("LWC config:      lwc.properties");
             log("SQLite jar:      lib/sqlite.jar");
